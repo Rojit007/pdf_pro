@@ -3,7 +3,7 @@ name: Build macOS App
 on:
   workflow_dispatch:   # manual trigger from GitHub Actions tab
   push:
-    branches: [main]
+    branches: [master]
     paths:
       - 'pdf_pro.py'
       - 'requirements.txt'
