@@ -1,0 +1,85 @@
+name: Build macOS App
+
+on:
+  workflow_dispatch:   # manual trigger from GitHub Actions tab
+  push:
+    branches: [main]
+    paths:
+      - 'pdf_pro.py'
+      - 'requirements.txt'
+
+jobs:
+  build-macos:
+    runs-on: macos-13   # Intel runner (also works on Apple Silicon via Rosetta)
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install pyinstaller dmgbuild
+
+      - name: Build .app bundle with PyInstaller
+        run: |
+          python -m PyInstaller \
+            --noconfirm \
+            --clean \
+            --windowed \
+            --name PDFStudio \
+            --collect-submodules fitz \
+            --collect-all PIL \
+            --collect-all fitz \
+            --hidden-import tkinter \
+            --hidden-import tkinter.ttk \
+            --hidden-import tkinter.filedialog \
+            --hidden-import tkinter.messagebox \
+            --hidden-import tkinter.colorchooser \
+            --hidden-import tkinter.simpledialog \
+            --osx-bundle-identifier com.pdfstudio.app \
+            pdf_pro.py
+
+      - name: Create macOS .dmg installer
+        run: |
+          python - <<'PYEOF'
+          import dmgbuild, os, shutil
+
+          app_dir = "dist/PDFStudio.app"
+          dmg_path = "dist/PDFStudio-macOS.dmg"
+
+          settings = {
+              'filename': 'PDFStudio-macOS',
+              'volume_name': 'PDF Studio',
+              'format': 'UDBZ',
+              'size': None,
+              'files': [app_dir],
+              'symlinks': {'Applications': '/Applications'},
+              'icon_locations': {
+                  'PDFStudio.app': (140, 120),
+                  'Applications': (500, 120),
+              },
+              'background': None,
+              'icon_size': 128,
+              'text_size': 16,
+              'window_rect': ((100, 100), (640, 380)),
+          }
+
+          if os.path.exists(dmg_path):
+              os.remove(dmg_path)
+          dmgbuild.build_dmg(dmg_path, **settings)
+          print(f"DMG created: {dmg_path}")
+          PYEOF
+
+      - name: Upload .dmg artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PDFStudio-macOS
+          path: dist/PDFStudio-macOS.dmg
+          retention-days: 90
