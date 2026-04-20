@@ -55,7 +55,6 @@ jobs:
           dmg_path = "dist/PDFStudio-macOS.dmg"
 
           settings = {
-              'filename': 'PDFStudio-macOS',
               'volume_name': 'PDF Studio',
               'format': 'UDBZ',
               'size': None,
@@ -73,7 +72,7 @@ jobs:
 
           if os.path.exists(dmg_path):
               os.remove(dmg_path)
-          dmgbuild.build_dmg(dmg_path, **settings)
+          dmgbuild.build_dmg('PDFStudio-macOS', dmg_path, **settings)
           print(f"DMG created: {dmg_path}")
           PYEOF
 

@@ -61,7 +61,6 @@ $PYTHON - <<PYEOF
 import dmgbuild, os
 
 settings = {
-    'filename': 'PDFStudio-macOS',
     'volume_name': 'PDF Studio',
     'format': 'UDBZ',
     'size': None,
@@ -78,7 +77,7 @@ settings = {
 
 if os.path.exists('$DMG_PATH'):
     os.remove('$DMG_PATH')
-dmgbuild.build_dmg('$DMG_PATH', **settings)
+dmgbuild.build_dmg('PDFStudio-macOS', '$DMG_PATH', **settings)
 print(f'DMG created: $DMG_PATH')
 PYEOF
 
