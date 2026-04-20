@@ -72,7 +72,7 @@ jobs:
 
           if os.path.exists(dmg_path):
               os.remove(dmg_path)
-          dmgbuild.build_dmg('PDFStudio-macOS', dmg_path, **settings)
+          dmgbuild.build_dmg(dmg_path, 'PDF Studio', settings=settings)
           print(f"DMG created: {dmg_path}")
           PYEOF
 
