@@ -4,3 +4,4 @@ dist/
 *.pyc
 *.spec
 *.egg-info/
+*.dmg
